@@ -65,3 +65,23 @@ func initConfig() {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }
+func initDB() {
+	dbOptions := db.DBOptions{
+		Host:     viper.GetString("database.host"),
+		Port:     viper.GetInt("database.port"),
+		Username: viper.GetString("database.username"),
+		Password: viper.GetString("database.password"),
+		DBName:   viper.GetString("database.name"),
+		SSLMode:  viper.GetString("database.sslmode"),
+	}
+
+	dbConn, err := db.Connect(dbOptions)
+	if err != nil {
+		fmt.Println("Failed to connect to database", err)
+		panic(err)
+	}
+	dbPool = dbConn
+	authmc.DbPool = dbPool
+	middleware.DbPool = dbPool
+	router.DbPool = dbPool
+}
